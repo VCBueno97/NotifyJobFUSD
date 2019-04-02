@@ -5,6 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net.Http;
 using HtmlAgilityPack;
+using Discord;
+using Discord.Commands;
+using Discord.WebSocket;
 
 namespace Notify
 {
@@ -35,7 +38,6 @@ namespace Notify
             var oddDivs = htmlDoc.DocumentNode.Descendants("tr")
                 .Where(node => node.GetAttributeValue("class", "")
                 .Equals("even")).ToList();
-
             foreach (var div in evenDivs)
             {
                 var jobs = div.Descendants("td").ElementAt(4).InnerText;
@@ -45,7 +47,6 @@ namespace Notify
                 }
 
             }
-
             foreach (var div in oddDivs)
             {
                 var jobsOdd = div.Descendants("td").ElementAt(4).InnerText;
@@ -54,14 +55,17 @@ namespace Notify
                     JobFound = true;
                 }
             }
-            if (JobFound == true)
-            {
-                Console.WriteLine("Yes!");
-            }
-            else
-            {
-                Console.WriteLine("False");
-            }
+        }
+        private async Task MainAsync()
+        {
+            _client = new DiscordSocketClient();
+
+            _client.Log += Log;
+
+            await _client.LoginAsync(TokenType.Bot, "BDtQ6EE7Gp9nB4yUDQD4gBHO9zO9JntY");
+            await _client.StartAsync();
+
+            await Task.Delay(-1);
         }
     }
 }
