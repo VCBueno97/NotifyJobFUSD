@@ -13,14 +13,13 @@ namespace Notify
 {
     class Program
     {
+        DiscordSocketClient _client;
+
         static void Main(string[] args)
-        {
-            ReadPage();
+            => new Program().StartAsync().GetAwaiter().GetResult();
+   
 
-            Console.ReadLine();
-        }
-
-        private static async Task ReadPage()
+        public static async Task ReadPage()
         {
             var url = "https://jobs.fresnounified.org/ats/job_board?COMPANY_ID=00001115";
             var httpClient = new HttpClient();
@@ -56,16 +55,20 @@ namespace Notify
                 }
             }
         }
-        private async Task MainAsync()
+        private Task Log(LogMessage msg)
+        {
+            Console.WriteLine(msg.ToString());
+            return Task.CompletedTask;
+        }
+        public async Task StartAsync()
         {
             _client = new DiscordSocketClient();
-
             _client.Log += Log;
-
-            await _client.LoginAsync(TokenType.Bot, "BDtQ6EE7Gp9nB4yUDQD4gBHO9zO9JntY");
+            await _client.LoginAsync(TokenType.Bot, "NTYyNzQ5MzgxNzUzODMxNDQ4.XKPw3A.lcNR_3DOBcJMvr402ahimeiw8jE");
             await _client.StartAsync();
-
             await Task.Delay(-1);
+
         }
+           
     }
 }
