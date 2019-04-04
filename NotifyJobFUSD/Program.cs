@@ -37,45 +37,50 @@ namespace Notify
         }
         public async Task ReadPage()
         {
-            var url = "https://jobs.fresnounified.org/ats/job_board?COMPANY_ID=00001115";
-            var httpClient = new HttpClient();
-            var html = await httpClient.GetStringAsync(url);
-
-            var htmlDoc = new HtmlDocument();
-            bool JobFound = false;
-
-            htmlDoc.LoadHtml(html);
-            var evenDivs = htmlDoc.DocumentNode.Descendants("tr")
-                .Where(node => node.GetAttributeValue("class", "")
-                .Equals("even")).ToList();
-
-            var oddDivs = htmlDoc.DocumentNode.Descendants("tr")
-                .Where(node => node.GetAttributeValue("class", "")
-                .Equals("even")).ToList();
-            foreach (var div in evenDivs)
+            while (true)
             {
-                var jobs = div.Descendants("td").ElementAt(4).InnerText;
-                if (jobs.Contains("Programmer") == true)
+                var url = "https://jobs.fresnounified.org/ats/job_board?COMPANY_ID=00001115";
+                var httpClient = new HttpClient();
+                var html = await httpClient.GetStringAsync(url);
+                var htmlDoc = new HtmlDocument();
+                bool Job = false;
+                string date = DateTime.Now.ToString("hh:mm:ss tt");
+                htmlDoc.LoadHtml(html);
+                var evenDivs = htmlDoc.DocumentNode.Descendants("tr")
+                    .Where(node => node.GetAttributeValue("class", "")
+                    .Equals("even")).ToList();
+
+                var oddDivs = htmlDoc.DocumentNode.Descendants("tr")
+                    .Where(node => node.GetAttributeValue("class", "")
+                    .Equals("even")).ToList();
+                foreach (var div in evenDivs)
                 {
-                    JobFound = true;
-                }
+                    var jobs = div.Descendants("td").ElementAt(4).InnerText;
+                    if (jobs.Contains("Developer") == true)
+                    {
+                        Job = true;
+                    }
 
-            }
-            foreach (var div in oddDivs)
-            {
-                var jobsOdd = div.Descendants("td").ElementAt(4).InnerText;
-                if (jobsOdd.Contains("Programmer") == true)
-                {
-                    JobFound = true;
                 }
-            }
-            if(JobFound == true) 
-            {
-              await _client.GetGuild(562750653416472592).GetTextChannel(562750653454221364).SendMessageAsync("JOB FOUND");
-            }
-            else 
-            {
-              await _client.GetGuild(562750653416472592).GetTextChannel(562750653454221364).SendMessageAsync("No Software Developer Job Found Yet");
+                foreach (var div in oddDivs)
+                {
+                    var jobsOdd = div.Descendants("td").ElementAt(4).InnerText;
+                    if (jobsOdd.Contains("Developer") == true)
+                    {
+                        Job = true;
+                    }
+                }
+                if (Job == true)
+                {
+                    await _client.GetGuild(562750653416472592).GetTextChannel(562750653454221364).SendMessageAsync(("<@101925060553490432> Job Found!! " + date));
+                    await Task.Delay(300000);
+                }
+                else
+                {
+                    await _client.GetGuild(562750653416472592).GetTextChannel(562750653454221364).SendMessageAsync(("Job Not Found! " + date));
+                    await Task.Delay(300000);
+
+                }
             }
         }
     }
