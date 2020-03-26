@@ -29,7 +29,7 @@ namespace Notify
         {
             _client = new DiscordSocketClient();
             _client.Log += Log;
-            await _client.LoginAsync(TokenType.Bot, "NTYyNzQ5MzgxNzUzODMxNDQ4.XKPw3A.lcNR_3DOBcJMvr402ahimeiw8jE");
+            await _client.LoginAsync(TokenType.Bot, "NTYyNzQ5MzgxNzUzODMxNDQ4.XnvwFA.UMNoxrV2zuL9q0KHSErg5PWUTD8");
             await _client.StartAsync();
             ReadPage();
             await Task.Delay(-1);
@@ -39,6 +39,10 @@ namespace Notify
         {
             while (true)
             {
+                int counteven = 0;
+                int countodd = 0;
+                int whereodd = 0;
+                int whereeven = 0;
                 var url = "https://jobs.fresnounified.org/ats/job_board?COMPANY_ID=00001115";
                 var httpClient = new HttpClient();
                 var html = await httpClient.GetStringAsync(url);
@@ -56,30 +60,37 @@ namespace Notify
                 foreach (var div in evenDivs)
                 {
                     var jobs = div.Descendants("td").ElementAt(4).InnerText;
-                    if (jobs.Contains("Developer") == true)
+                    counteven++;
+                    if (jobs.Contains("Software") == true)
                     {
                         Job = true;
+                        whereeven = counteven;
+                        break;
                     }
 
                 }
                 foreach (var div in oddDivs)
                 {
                     var jobsOdd = div.Descendants("td").ElementAt(4).InnerText;
-                    if (jobsOdd.Contains("Developer") == true)
+                    countodd++;
+                    if (jobsOdd.Contains("Software") == true)
                     {
                         Job = true;
+                        whereodd = countodd;
+                        break;
                     }
                 }
+                Console.WriteLine($"{countodd} {counteven} Where at {whereodd} {whereeven} ");
+  
                 if (Job == true)
                 {
-                    await _client.GetGuild(562750653416472592).GetTextChannel(562750653454221364).SendMessageAsync(("<@101925060553490432> Job Found!! " + date));
+                    await _client.GetGuild(692518346809409547).GetTextChannel(692518346809409550).SendMessageAsync(("<@101925060553490432> Job Found!! " + date));
                     await Task.Delay(300000);
                 }
-                else
+                else if(Job == false)
                 {
-                    await _client.GetGuild(562750653416472592).GetTextChannel(562750653454221364).SendMessageAsync(("Job Not Found! " + date));
+                    await _client.GetGuild(692518346809409547).GetTextChannel(692518346809409550).SendMessageAsync(("Job Not Found! " + date));
                     await Task.Delay(300000);
-
                 }
             }
         }
